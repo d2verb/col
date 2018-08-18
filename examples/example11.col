@@ -1,0 +1,7 @@
+:fun main
+  @a = 0
+  @b = 3
+  :if @a < @b :and :not (10 < 3)
+    :ret 42
+  :end
+:end

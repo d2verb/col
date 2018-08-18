@@ -10,16 +10,23 @@ tokens = (
     "SUB",
     "MUL",
     "DIV",
+    "LTH",
+    "AND",
+    "NOT",
     "LPR",
     "RPR",
     "EQU",
     "LCL",
+    "IF",
+    "WHL",
 )
 
 t_IDF = r"[a-zA-Z_]+"
 t_FUN = r":fun"
 t_END = r":end"
 t_RET = r":ret"
+t_IF  = r":if"
+t_WHL = r":whl"
 t_ADD = r"\+"
 t_SUB = r"-"
 t_MUL = r"\*"
@@ -27,6 +34,9 @@ t_DIV = r"/"
 t_LPR = r"\("
 t_RPR = r"\)"
 t_EQU = r"="
+t_LTH = r"<"
+t_AND = r":and"
+t_NOT = r":not"
 
 t_ignore = " \t"
 

@@ -1,0 +1,7 @@
+:fun main
+  @a = 0
+  :whl @a < 42
+    @a = @a + 1
+  :end
+  :ret @a
+:end

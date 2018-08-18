@@ -2,3 +2,5 @@ parser.out
 parsetab.py
 __pychache__
 *.pyc
+a.out
+output.S

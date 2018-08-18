@@ -1,0 +1,13 @@
+:fun main
+  @a = 42
+  @b = 43
+  :if @a
+    @a = 44
+    @c = 1
+    :if @c
+      :ret 45
+    :end
+    :ret @a
+  :end
+  :ret @b
+:end

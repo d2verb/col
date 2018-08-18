@@ -1,0 +1,7 @@
+:fun main
+  @a = 42
+  @b = 2
+  :if @a :and @b
+    :ret @a
+  :end
+:end
