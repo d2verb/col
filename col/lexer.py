@@ -16,9 +16,13 @@ tokens = (
     "LPR",
     "RPR",
     "EQU",
+    "EQ2",
     "LCL",
+    "ARG",
     "IF",
     "WHL",
+    "COM",
+    "PUT",
 )
 
 t_IDF = r"[a-zA-Z_]+"
@@ -27,6 +31,7 @@ t_END = r":end"
 t_RET = r":ret"
 t_IF  = r":if"
 t_WHL = r":whl"
+t_PUT = r":put"
 t_ADD = r"\+"
 t_SUB = r"-"
 t_MUL = r"\*"
@@ -34,15 +39,22 @@ t_DIV = r"/"
 t_LPR = r"\("
 t_RPR = r"\)"
 t_EQU = r"="
+t_EQ2 = r"=="
 t_LTH = r"<"
 t_AND = r":and"
 t_NOT = r":not"
+t_COM = r","
 
 t_ignore = " \t"
 
 def t_LCL(t):
     r"@[a-z]"
-    t.value = int(ord(t.value[1]) - ord("a"))
+    t.value = ord(t.value[1]) - ord("a") + 1
+    return t
+
+def t_ARG(t):
+    r"\#[a-z]"
+    t.value = -(ord(t.value[1]) - ord("a") + 1)
     return t
 
 def t_NUM(t):

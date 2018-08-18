@@ -9,6 +9,10 @@ class CodeGenerator:
             lcl_no = n[1]
             print("mov rax, qword ptr [rbp - {}]".format(0x28 - lcl_no * 8))
             print("push rax")
+        elif expr_type == "arg":
+            arg_no = n[1]
+            print("mov rax, qword ptr [rbp + {}]".format(0x10 + arg_no * 8))
+            print("push rax")
         elif expr_type == "not":
             self.emit_expression(n[1])
             print("pop rax")
@@ -19,6 +23,25 @@ class CodeGenerator:
             print("1:")
             print("push 1")
             print("2:")
+        elif expr_type == "funcall":
+            fun_name = n[1]
+            params = n[2]
+
+            # prepare params
+            for i in range(5 - len(params)):
+                print("push 0")
+            for expression in params[::-1]:
+                self.emit_expression(expression)
+
+            # call function
+            print("call {}".format(fun_name))
+
+            # clean up params
+            for i in range(5):
+                print("pop rbx")
+
+            # push return value
+            print("push rax")
 
     def emit_binop(self, n):
         op_type = n[0]
@@ -50,6 +73,14 @@ class CodeGenerator:
             print("1:")
             print("push 1")
             print("2:")
+        elif op_type == "==":
+            print("cmp rax, rbx")
+            print("je 1f")
+            print("push 0")
+            print("jmp 2f")
+            print("1:")
+            print("push 1")
+            print("2:")
         elif op_type == ":and":
             print("cmp rax, 0")
             print("je 1f")
@@ -67,6 +98,12 @@ class CodeGenerator:
         print("jmp {}_epilogue".format(self.current_fun_name))
 
     def emit_asslcl(self, n):
+        arg_no = n[0]
+        self.emit_expression(n[1])
+        print("pop rax")
+        print("mov qword ptr [rbp + {}], rax".format(0x10 + arg_no * 8))
+
+    def emit_assarg(self, n):
         lcl_no = n[0]
         self.emit_expression(n[1])
         print("pop rax")
@@ -127,8 +164,9 @@ class CodeGenerator:
 
     def gen(self, n):
         self.emit_prologue()
-        node_type = n[0]
-        self.emit_fundef(n[1:])
+        for function_def in n:
+            print("")
+            self.emit_fundef(function_def[1:])
 
     def __init__(self):
         self.current_if_no = 0

@@ -1,0 +1,16 @@
+:fun fact
+  :if #a == 1
+    :ret 1
+  :end
+
+  :if #a == 0
+    :ret 1
+  :end
+
+  :ret #a * fact(#a - 1)
+:end
+
+:fun main
+  :ret fact(4)
+:end
+

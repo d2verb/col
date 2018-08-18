@@ -1,0 +1,8 @@
+:fun add
+  :ret #a + #b
+:end
+
+:fun main
+  :ret add(40, 2)
+:end
+
