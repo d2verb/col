@@ -1,32 +1,31 @@
 def emit_fun_prologue():
-    output = (
-        "push rbp",
-        "mov rbp, rsp",
-        "sub rsp, 0x68"
-    )
-    print("\n".join(output))
+    print("push rbp")
+    print("mov rbp, rsp")
+    print("sub rsp, 0x28")
 
 def emit_fun_epilogue():
-    output = (
-        "add rsp, 0x68",
-        "pop rbp",
-        "ret"
-    )
-    print("\n".join(output))
+    print("mov rsp, rbp")
+    print("pop rbp")
+    print("ret")
+
+# result is set to RAX
+def emit_expression(n):
+    expr_type = n[0]
+    if expr_type == "binop":
+        emit_binop(n[1:])
+    elif expr_type == "num":
+        print("push {}".format(n[1]))
+    elif expr_type == "lcl":
+        lcl_no = n[1]
+        print("mov rax, qword ptr [rbp - {}]".format(0x28 - lcl_no))
+        print("push rax")
 
 def emit_binop(n):
     op_type = n[0]
     lhs, rhs = n[1], n[2]
 
-    if lhs[0] == "num":
-        print("push {}".format(lhs[1]))
-    elif lhs[0] == "binop":
-        emit_binop(lhs[1:])
-
-    if rhs[0] == "num":
-        print("push {}".format(rhs[1]))
-    elif rhs[0] == "binop":
-        emit_binop(rhs[1:])
+    emit_expression(lhs)
+    emit_expression(rhs)
 
     print("pop rbx\npop rax")
 
@@ -42,41 +41,36 @@ def emit_binop(n):
     print("push rax")
 
 def emit_ret(n, fun_name):
-    expression_type = n[0]
-    if expression_type == "num":
-        output = (
-            "mov rax, {}".format(n[1]),
-            "jmp {}_epilogue".format(fun_name)
-        )
-        print("\n".join(output))
-    elif expression_type == "binop":
-        emit_binop(n[1:])
-        output = (
-            "pop rax",
-            "jmp {}_epilogue".format(fun_name)
-        )
-        print("\n".join(output))
+    emit_expression(n)
+    print("pop rax")
+    print("jmp {}_epilogue".format(fun_name))
+
+def emit_asslcl(n):
+    lcl_no = n[0]
+    emit_expression(n[1])
+    print("pop rax")
+    print("mov qword ptr [rbp - {}], rax".format(0x28 - lcl_no))
 
 def emit_statement(n, fun_name):
     statement_type = n[0]
     if statement_type == "ret":
         emit_ret(n[1], fun_name)
+    elif statement_type == "asslcl":
+        emit_asslcl(n[1:])
 
 def emit_fundef(n):
     fun_name = n[0]
     print("{}:".format(fun_name))
     emit_fun_prologue()
-    emit_statement(n[1], fun_name)
+    for statement in n[1]:
+        emit_statement(statement, fun_name)
     print("{}_epilogue:".format(fun_name))
     emit_fun_epilogue()
 
 def emit_prologue():
-    output = (
-        ".intel_syntax noprefix",
-        ".globl _main",
-        "_main = main"
-    )
-    print("\n".join(output))
+    print(".intel_syntax noprefix")
+    print(".globl _main")
+    print("_main = main")
 
 def codegen(n):
     emit_prologue()

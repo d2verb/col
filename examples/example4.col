@@ -1,0 +1,4 @@
+:fun main
+  @a = 42
+  :ret @a
+:end

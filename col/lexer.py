@@ -12,6 +12,8 @@ tokens = (
     "DIV",
     "LPR",
     "RPR",
+    "EQU",
+    "LCL",
 )
 
 t_IDF = r"[a-zA-Z_]+"
@@ -24,8 +26,14 @@ t_MUL = r"\*"
 t_DIV = r"/"
 t_LPR = r"\("
 t_RPR = r"\)"
+t_EQU = r"="
 
 t_ignore = " \t"
+
+def t_LCL(t):
+    r"@[a-z]"
+    t.value = int(ord(t.value[1]) - ord("a"))
+    return t
 
 def t_NUM(t):
     r"\d+"
