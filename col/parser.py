@@ -1,6 +1,11 @@
 from col.lexer import tokens
 from ply import yacc
 
+precedence = (
+    ("left", "ADD", "SUB"),
+    ("left", "MUL", "DIV"),
+)
+
 def p_function_def(p):
     '''
     function_def : FUN IDF statement END
@@ -14,6 +19,21 @@ def p_statement(p):
     p[0] = ("ret", p[2])
 
 def p_expression(p):
+    '''
+    expression : expression ADD expression
+               | expression SUB expression
+               | expression MUL expression
+               | expression DIV expression
+    '''
+    p[0] = ("binop", p[2], p[1], p[3])
+
+def p_expression_group(p):
+    '''
+    expression : LPR expression RPR
+    '''
+    p[0] = p[2]
+
+def p_expression_number(p):
     '''
     expression : NUM
     '''
